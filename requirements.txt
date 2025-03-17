@@ -1,2 +1,3 @@
 srtm.py
 folium
+plotly
