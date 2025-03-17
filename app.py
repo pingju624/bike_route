@@ -85,24 +85,39 @@ if uploaded_file:
 
     # **繪製爬升與坡度圖**
     fig = go.Figure()
+
+    # **海拔曲線**
     fig.add_trace(go.Scatter(
         x=route_df["cumulative_distance"],
         y=route_df["elevation"],
         mode="lines",
         name="海拔高度 (m)",
         line=dict(color="blue"),
-        customdata=route_df["smoothed_grade"],
+        customdata=route_df["smoothed_grade"],  # 加入坡度資訊
         hovertemplate="距離: %{x:.2f} km<br>海拔: %{y:.2f} m<br>坡度: %{customdata:.1f} %"
     ))
 
+    # **坡度曲線（平滑後）**
     fig.add_trace(go.Scatter(
         x=route_df["cumulative_distance"],
         y=route_df["smoothed_grade"],
         mode="lines",
         name="坡度 (%)",
-        line=dict(color="red", dash="dot"),
+        line=dict(color="red", dash="dot"),  # 紅色虛線
         yaxis="y2"
     ))
+
+    # **標記點**
+    for _, row in placemark_df.iterrows():
+        fig.add_trace(go.Scatter(
+            x=[row["cumulative_distance"]],
+            y=[row["elevation"]],
+            mode="markers+text",
+            text=row["name"],
+            textposition="top center",
+            marker=dict(size=10, color="red"),
+            name=row["name"]
+        ))
 
     # **設定雙 Y 軸（海拔 + 坡度）**
     fig.update_layout(
@@ -118,18 +133,8 @@ if uploaded_file:
     # **生成互動地圖**
     st.subheader("🗺️ 互動式地圖")
     m = folium.Map(location=[route_df["lat"].mean(), route_df["lon"].mean()], zoom_start=12)
-    folium.PolyLine(list(zip(route_df["lat"], route_df["lon"])), color="blue", weight=2.5, opacity=1).add_to(m)
 
-    # **標記坡度點**
-    for i, row in route_df.iterrows():
-        if i % 10 == 0:
-            folium.Marker(
-                location=[row["lat"], row["lon"]],
-                popup=f"距離: {row['cumulative_distance']:.2f} km\n坡度: {row['smoothed_grade']:.1f}%",
-                icon=folium.Icon(color="red" if row["smoothed_grade"] > 5 else "green")
-            ).add_to(m)
-
-    # **標記點**
+    # **標記點（只顯示停留點）**
     for _, row in placemark_df.iterrows():
         folium.Marker(
             location=[row["lat"], row["lon"]],
@@ -138,4 +143,3 @@ if uploaded_file:
         ).add_to(m)
 
     folium_static(m)  # 顯示地圖
-
