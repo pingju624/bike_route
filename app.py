@@ -9,7 +9,7 @@ from streamlit_folium import folium_static
 import numpy as np
 from scipy.ndimage import gaussian_filter1d
 
-filter_grade_parameter = 20
+filter_grade_parameter = 50
 
 # **函數：解析 KML 檔案**
 def parse_kml(file):
@@ -100,8 +100,8 @@ if uploaded_file:
     total_distance = route_df["cumulative_distance"].max()
     total_ascent = route_df["filtered_elevation"].diff().clip(lower=0).sum()
     total_descent = -route_df["filtered_elevation"].diff().clip(upper=0).sum()
-    max_grade = route_df["smoothed_grade"].max()
-    avg_grade = route_df["smoothed_grade"].mean()
+    max_grade = route_df["filtered_grade"].max()
+    avg_grade = route_df["filtered_grade"].mean()
 
     # **繪製爬升與坡度圖**
     fig = go.Figure()
