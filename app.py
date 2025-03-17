@@ -202,5 +202,15 @@ if uploaded_file:
             icon=folium.Icon(color="blue", icon="info-sign")
         ).add_to(m)
 
+        # **固定地標名稱**
+        folium.Marker(
+            location=[row["lat"], row["lon"]],
+            icon=folium.DivIcon(html=f"""
+                <div style="font-size: 12px; font-weight: bold; color: black; text-align: center;">
+                    {row['name']}
+                </div>
+            """),
+        ).add_to(m)
+
 
     folium_static(m)
