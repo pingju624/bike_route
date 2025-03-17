@@ -181,18 +181,19 @@ if uploaded_file:
         )
     )
     
-    # **顯示圖表**
-    fig.show()
-
-
-    st.plotly_chart(fig)
-
     fig.update_layout(
         font_family="Microsoft JhengHei, SimHei, Noto Sans TC, Arial Unicode MS, sans-serif",
         font=dict(size=14),  # ✅ 設定字體大小
         plot_bgcolor="rgba(0,0,0,0)",  # ✅ 背景透明
         paper_bgcolor="rgba(0,0,0,0)"
     )
+
+    # **顯示圖表**
+    fig.show()
+
+
+    st.plotly_chart(fig)
+
 
     # **生成坡度圖（示例）**
     fig.write_image("坡度圖_不透明.png", format="png", scale=3)
