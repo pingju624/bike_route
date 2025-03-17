@@ -122,7 +122,7 @@ if uploaded_file:
 
     fig.add_trace(go.Scatter(
         x=route_df["cumulative_distance"],
-        y=route_df["smoothed_elevation"],  
+        y=route_df["smoothed_elevation"],  # 使用平滑的海拔高度
         mode="lines",
         name="海拔高度 (m)",
         line=dict(color="blue")
@@ -149,7 +149,15 @@ if uploaded_file:
             name=row["name"]
         ))
 
-    st.plotly_chart(fig)
+
+    fig.update_layout(
+        title="🚴‍♂️ 爬升與坡度圖",
+        xaxis_title="累積距離 (km)",
+        yaxis=dict(title="海拔 (m)"),
+        yaxis2=dict(title="坡度 (%)", overlaying="y", side="right"),
+        hovermode="x"
+    )
+   st.plotly_chart(fig)
 
     # **生成互動地圖**
     m = folium.Map(location=[route_df["lat"].mean(), route_df["lon"].mean()], zoom_start=12)
