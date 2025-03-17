@@ -82,12 +82,16 @@ if uploaded_file:
                                               (route_df.iloc[i]["lat"], route_df.iloc[i]["lon"])).km for i in range(1, len(route_df))]
     route_df["cumulative_distance"] = route_df["distance_km"].cumsum()
 
+
+    # **平滑海拔高度**
+    route_df["smoothed_elevation"] = route_df["elevation"].rolling(window=30, center=True, min_periods=1).mean()
+
     # **計算坡度**
     route_df["grade"] = route_df["filtered_elevation"].diff() / (route_df["distance_km"] * 1000) * 100
     route_df["grade"].fillna(0, inplace=True)
 
-    # **平滑坡度數據（移動平均）**
-    route_df["smoothed_grade"] = route_df["grade"].rolling(window=50, center=True, min_periods=1).mean()
+    # **平滑坡度數據**
+    route_df["smoothed_grade"] = route_df["grade"].rolling(window=100, center=True, min_periods=1).mean()
 
     # **修正標記點的位置**
     placemark_df["cumulative_distance"] = placemark_df.apply(
@@ -118,7 +122,7 @@ if uploaded_file:
 
     fig.add_trace(go.Scatter(
         x=route_df["cumulative_distance"],
-        y=route_df["filtered_elevation"],  
+        y=route_df["smoothed_elevation"],  
         mode="lines",
         name="海拔高度 (m)",
         line=dict(color="blue")
