@@ -215,23 +215,6 @@ if uploaded_file:
                        data=load_image_as_bytes("坡度圖_透明.png"),
                        file_name="坡度圖_透明.png",
                        mime="image/png")
-        
-        # **讀取圖片為二進制**
-        def load_image_as_bytes(file_path):
-            with open(file_path, "rb") as file:
-                return file.read()
-        
-        # **Streamlit 下載按鈕**
-        st.download_button(label="📥 下載坡度圖（不透明）",
-                           data=load_image_as_bytes("坡度圖_不透明.png"),
-                           file_name="坡度圖_不透明.png",
-                           mime="image/png")
-        
-        st.download_button(label="📥 下載坡度圖（透明背景）",
-                           data=load_image_as_bytes("坡度圖_透明.png"),
-                           file_name="坡度圖_透明.png",
-                           mime="image/png")
-
 
     # **生成互動地圖**
     m = folium.Map(location=[route_df["lat"].mean(), route_df["lon"].mean()], zoom_start=12)
