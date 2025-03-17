@@ -117,26 +117,27 @@ if uploaded_file:
         font=dict(size=14)
     )
 
-    # **海拔高度曲線（顯示里程數 & 坡度）**
+    # **海拔高度曲線（顯示里程數 & 坡度，但不顯示「海拔高度 (m)」的標籤）**
     fig.add_trace(go.Scatter(
         x=route_df["cumulative_distance"],
         y=route_df["filtered_elevation"],  
         mode="lines",
-        name="海拔高度 (m)",
+        name="海拔高度",  # **圖例名稱**
         line=dict(color="blue"),
         customdata=np.stack((route_df["cumulative_distance"], route_df["smoothed_grade"]), axis=-1),  # 里程數 & 坡度
         hovertemplate="距離: %{customdata[0]:.2f} km<br>海拔: %{y:.2f} m<br>坡度: %{customdata[1]:.1f} %",
-        hoverinfo="none",  # **完全隱藏 Hover**
+        yaxis="y"
     ))
     
-    # **坡度曲線（完全隱藏 Hover）**
+    # **坡度曲線（應該對應 y2 軸，並隱藏 Hover）**
     fig.add_trace(go.Scatter(
         x=route_df["cumulative_distance"],
         y=route_df["smoothed_grade"],
         mode="lines",
-        name="坡度 (%)",
+        name="坡度 (%)",  # **圖例名稱**
         line=dict(color="red", dash="dot"),
         hoverinfo="none",  # **完全隱藏 Hover**
+        yaxis="y2"
     ))
 
     # **標記點**
@@ -152,13 +153,26 @@ if uploaded_file:
         ))
 
 
+    # **設定雙 Y 軸（海拔 + 坡度）**
     fig.update_layout(
         title="🚴‍♂️ 爬升與坡度圖",
         xaxis_title="累積距離 (km)",
-        yaxis=dict(title="海拔 (m)"),
+        yaxis=dict(title="海拔 (m)", side="left"),
         yaxis2=dict(title="坡度 (%)", overlaying="y", side="right"),
-        hovermode="x"
+        hovermode="x",
+        
+        # **設定圖例位置**
+        legend=dict(
+            x=1,  # 靠右
+            y=0,  # 靠下
+            xanchor="right",
+            yanchor="bottom"
+        )
     )
+    
+    # **顯示圖表**
+    fig.show()
+
    
     st.plotly_chart(fig)
 
