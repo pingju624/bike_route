@@ -1,1 +1,1 @@
-srtm
+srtm.py
