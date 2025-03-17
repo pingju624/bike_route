@@ -198,7 +198,7 @@ if uploaded_file:
         """
         folium.Marker(
             location=[row["lat"], row["lon"]],
-            popup=folium.Popup(popup_text, max_width=250),  # **調整最大寬度**
+            popup=folium.Popup(popup_text, max_width=100),  # **調整最大寬度**
             icon=folium.Icon(color="blue", icon="info-sign")
         ).add_to(m)
 
