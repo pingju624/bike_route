@@ -8,6 +8,12 @@ from geopy.distance import geodesic
 from streamlit_folium import folium_static
 import numpy as np
 from scipy.ndimage import gaussian_filter1d
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+import streamlit as st
+import io
+import plotly.io as pio
+
 
 filter_grade_parameter = 30
 
@@ -180,8 +186,29 @@ if uploaded_file:
     # **顯示圖表**
     fig.show()
 
-   
     st.plotly_chart(fig)
+
+    # **生成坡度圖（示例）**
+    fig.write_image("坡度圖_不透明.png", format="png", scale=3)
+    fig.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)")  # 設置背景透明
+    fig.write_image("坡度圖_透明.png", format="png", scale=3)
+    
+    # **讀取圖片為二進制**
+    def load_image_as_bytes(file_path):
+        with open(file_path, "rb") as file:
+            return file.read()
+    
+    # **Streamlit 下載按鈕**
+    st.download_button(label="📥 下載坡度圖（不透明）",
+                       data=load_image_as_bytes("坡度圖_不透明.png"),
+                       file_name="坡度圖_不透明.png",
+                       mime="image/png")
+    
+    st.download_button(label="📥 下載坡度圖（透明背景）",
+                       data=load_image_as_bytes("坡度圖_透明.png"),
+                       file_name="坡度圖_透明.png",
+                       mime="image/png")
+
 
     # **生成互動地圖**
     m = folium.Map(location=[route_df["lat"].mean(), route_df["lon"].mean()], zoom_start=12)
@@ -214,3 +241,21 @@ if uploaded_file:
 
 
     folium_static(m)
+
+
+    # **啟動 Selenium 截圖**
+    options = Options()
+    options.add_argument("--headless")
+    driver = webdriver.Chrome(options=options)
+    
+    m.save("map.html")  # 先存成 HTML
+    driver.get("file://" + os.path.abspath("map.html"))
+    driver.set_window_size(1024, 768)
+    driver.save_screenshot("地圖軌跡.png")
+    driver.quit()
+    
+    # **提供下載按鈕**
+    st.download_button(label="📥 下載地圖軌跡",
+                       data=load_image_as_bytes("地圖軌跡.png"),
+                       file_name="地圖軌跡.png",
+                       mime="image/png")
