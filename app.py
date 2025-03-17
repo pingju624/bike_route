@@ -48,7 +48,7 @@ def parse_kml(file):
     return route_df, placemark_df
 
 # **坡度計算函數**
-def calculate_smoothed_grade(route_df, min_distance=0.1):  # 0.02 km = 20m
+def calculate_smoothed_grade(route_df, min_distance=0.5):  # 0.02 km = 20m
     grades = []
     for i in range(len(route_df)):
         # 找到前後相距至少 min_distance km 的最近點
