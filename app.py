@@ -55,7 +55,7 @@ def parse_kml(file):
     return route_df, placemark_df
 
 # **Streamlit UI**
-st.title("🚴‍♂️ 自行車路線分析工具")
+st.title("坡度圖、路線分析工具")
 
 st.markdown("可以使用google我的地圖規劃好路徑後，下載kml檔匯出，在這邊上傳")
 
@@ -63,6 +63,7 @@ st.markdown("可以使用google我的地圖規劃好路徑後，下載kml檔匯�
 uploaded_file = st.file_uploader("請上傳 KML 檔案", type=["kml"])
 if uploaded_file:
     # 解析 KML
+    file_name = uploaded_file.name.replace(".kml", "")
     route_df, placemark_df = parse_kml(uploaded_file)
 
     # **讓使用者修改標記點名稱**
@@ -172,7 +173,7 @@ if uploaded_file:
     
     # **設定雙 Y 軸（海拔 + 坡度）**
     fig.update_layout(
-        title="🚴‍♂️ 爬升與坡度圖",
+        title=f" {file_name} - 爬升與坡度圖",
         xaxis_title="累積距離 (km)",
         yaxis=dict(title="海拔 (m)", side="left"),
         yaxis2=dict(title="坡度 (%)", overlaying="y", side="right"),
