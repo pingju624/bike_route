@@ -109,7 +109,7 @@ if uploaded_file:
 
     # **顯示統計數據**
     fig.add_annotation(
-        x=0, y=1.05,
+        x=0, y=1,
         xref="paper", yref="paper",
         text=f"總距離: {total_distance:.2f} km<br>總爬升: {total_ascent:.0f} m<br>總下降: {total_descent:.0f} m<br>最大坡度: {max_grade:.1f} %<br>平均坡度: {avg_grade:.1f} %",
         showarrow=False,
@@ -117,21 +117,26 @@ if uploaded_file:
         font=dict(size=14)
     )
 
+    # **海拔高度曲線（顯示里程數 & 坡度）**
     fig.add_trace(go.Scatter(
         x=route_df["cumulative_distance"],
-        y=route_df["filtered_elevation"],  # 使用平滑的海拔高度
+        y=route_df["filtered_elevation"],  
         mode="lines",
         name="海拔高度 (m)",
-        line=dict(color="blue")
+        line=dict(color="blue"),
+        customdata=np.stack((route_df["cumulative_distance"], route_df["smoothed_grade"]), axis=-1),  # 里程數 & 坡度
+        hovertemplate="距離: %{customdata[0]:.2f} km<br>海拔: %{y:.2f} m<br>坡度: %{customdata[1]:.1f} %",
+        hoverinfo="none",  # **完全隱藏 Hover**
     ))
-
+    
+    # **坡度曲線（完全隱藏 Hover）**
     fig.add_trace(go.Scatter(
         x=route_df["cumulative_distance"],
         y=route_df["smoothed_grade"],
         mode="lines",
         name="坡度 (%)",
         line=dict(color="red", dash="dot"),
-        yaxis="y2"
+        hoverinfo="none",  # **完全隱藏 Hover**
     ))
 
     # **標記點**
