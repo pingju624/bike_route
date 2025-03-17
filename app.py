@@ -182,7 +182,7 @@ if uploaded_file:
 
     # **生成互動地圖**
     m = folium.Map(location=[route_df["lat"].mean(), route_df["lon"].mean()], zoom_start=12)
-    folium.PolyLine(list(zip(route_df["lat"], route_df["lon"])), color="blue", weight=2.5, opacity=1).add_to(m)
+    folium.PolyLine(list(zip(route_df["lat"], route_df["lon"])), color="blue", weight=5, opacity=1).add_to(m)
 
     # **標記停靠點**
     for _, row in placemark_df.iterrows():
