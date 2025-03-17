@@ -142,7 +142,7 @@ if uploaded_file:
         y=route_df["smoothed_grade"],
         mode="lines",
         name="坡度 (%)",  # **圖例名稱**
-        line=dict(color="red", dash="dot"),
+        line=dict(color="gray", dash="dash"),
         hoverinfo="none",  # **完全隱藏 Hover**
         yaxis="y2"
     ))
@@ -155,7 +155,7 @@ if uploaded_file:
             mode="markers+text",
             text=row["name"],
             textposition="top center",
-            marker=dict(size=10, color="red"),
+            marker=dict(size=10, color=rgba(165, 42, 42, 1)),
             name=row["name"]
         ))
 
@@ -185,14 +185,22 @@ if uploaded_file:
 
     # **生成互動地圖**
     m = folium.Map(location=[route_df["lat"].mean(), route_df["lon"].mean()], zoom_start=12)
-    folium.PolyLine(list(zip(route_df["lat"], route_df["lon"])), color="blue", weight=5, opacity=1).add_to(m)
+    folium.PolyLine(list(zip(route_df["lat"], route_df["lon"])), color="blue", weight=2.5, opacity=1).add_to(m)
 
     # **標記停靠點**
     for _, row in placemark_df.iterrows():
+        popup_text = f"""
+        <div style="width: 200px;">
+            <b>{row['name']}</b><br>
+            - {row['cumulative_distance']:.2f} km<br>
+            海拔: {row['elevation']} m
+        </div>
+        """
         folium.Marker(
             location=[row["lat"], row["lon"]],
-            popup=f"{row['name']} - {row['cumulative_distance']:.2f} km\n海拔: {row['elevation']} m",
+            popup=folium.Popup(popup_text, max_width=250),  # **調整最大寬度**
             icon=folium.Icon(color="blue", icon="info-sign")
         ).add_to(m)
+
 
     folium_static(m)
