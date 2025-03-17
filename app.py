@@ -114,7 +114,11 @@ if uploaded_file:
         text=f"總距離: {total_distance:.2f} km<br>總爬升: {total_ascent:.0f} m<br>總下降: {total_descent:.0f} m<br>最大坡度: {max_grade:.1f} %<br>平均坡度: {avg_grade:.1f} %",
         showarrow=False,
         align="right",
-        font=dict(size=14)
+        font=dict(size=14),
+        xanchor="right",  # **對齊右側**
+        yanchor="bottom",  # **對齊底部**
+        xshift=-10,  # **向左微調，避免太靠邊**
+        yshift=10   # **向上微調，避免被邊界遮住**
     )
 
     # **海拔高度曲線（顯示里程數 & 坡度，但不顯示「海拔高度 (m)」的標籤）**
