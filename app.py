@@ -127,7 +127,7 @@ if uploaded_file:
 
     fig.add_trace(go.Scatter(
         x=route_df["cumulative_distance"],
-        y=route_df["filtered_grade"],
+        y=route_df["smoothed_grade"],
         mode="lines",
         name="坡度 (%)",
         line=dict(color="red", dash="dot"),
