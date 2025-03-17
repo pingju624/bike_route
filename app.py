@@ -108,49 +108,54 @@ if uploaded_file:
     max_grade = route_df["smoothed_grade"].max()
     avg_grade = route_df["smoothed_grade"].mean()
 
+    
+    # **用戶開關**
+    show_legend = st.checkbox("顯示圖例 (Legend)", value=True)
+    show_annotation = st.checkbox("顯示統計數據 (Annotation)", value=True)
+    
     # **繪製爬升與坡度圖**
     fig = go.Figure()
-
-    # **顯示統計數據**
-    fig.add_annotation(
-        x=1, y=0,
-        xref="paper", yref="paper",
-        text=f"總距離: {total_distance:.2f} km<br>總爬升: {total_ascent:.0f} m<br>總下降: {total_descent:.0f} m<br>最大坡度: {max_grade:.1f} %<br>平均坡度: {avg_grade:.1f} %",
-        showarrow=False,
-        align="right",
-        font=dict(size=14),
-        xanchor="right",  # **對齊右側**
-        yanchor="bottom",  # **對齊底部**
-        xshift=0,  # **向左微調，避免太靠邊**
-        yshift= 20   # **向上微調，避免被邊界遮住**
-    )
-
-    # **海拔高度曲線（顯示里程數 & 坡度，但不顯示「海拔高度 (m)」的標籤）**
+    
+    # **條件顯示統計數據**
+    if show_annotation:
+        fig.add_annotation(
+            x=1, y=0,
+            xref="paper", yref="paper",
+            text=f"總距離: {total_distance:.2f} km<br>總爬升: {total_ascent:.0f} m<br>總下降: {total_descent:.0f} m<br>最大坡度: {max_grade:.1f} %<br>平均坡度: {avg_grade:.1f} %",
+            showarrow=False,
+            align="right",
+            font=dict(size=14),
+            xanchor="right",
+            yanchor="bottom",
+            xshift=0,
+            yshift=20
+        )
+    
+    # **海拔高度曲線（綠色區域）**
     fig.add_trace(go.Scatter(
         x=route_df["cumulative_distance"],
         y=route_df["filtered_elevation"],  
         mode="lines",
-        name="海拔高度",
-        line=dict(color='rgba(68, 106, 55, 1)'),  # **設定線條為綠色**
-        fill='tozeroy',  # **讓底部填充顏色**
-        fillcolor='rgba(68, 106, 55, 0.3)',  # **半透明綠色**
+        name="海拔高度" if show_legend else "",  # **依據開關顯示名稱**
+        line=dict(color='rgba(68, 106, 55, 1)'),
+        fill='tozeroy',
+        fillcolor='rgba(68, 106, 55, 0.3)',
         customdata=np.stack((route_df["cumulative_distance"], route_df["smoothed_grade"]), axis=-1),  
         hovertemplate="距離: %{customdata[0]:.2f} km<br>海拔: %{y:.2f} m<br>坡度: %{customdata[1]:.1f} %",
         yaxis="y"
-        ))
-
+    ))
     
-    # **坡度曲線（應該對應 y2 軸，並隱藏 Hover）**
+    # **坡度曲線（灰色虛線）**
     fig.add_trace(go.Scatter(
         x=route_df["cumulative_distance"],
         y=route_df["smoothed_grade"],
         mode="lines",
-        name="坡度 (%)",  # **圖例名稱**
+        name="坡度 (%)" if show_legend else "",
         line=dict(color="gray", dash="dash"),
-        hoverinfo="none",  # **完全隱藏 Hover**
+        hoverinfo="none",
         yaxis="y2"
     ))
-
+    
     # **標記點**
     for _, row in placemark_df.iterrows():
         fig.add_trace(go.Scatter(
@@ -160,10 +165,9 @@ if uploaded_file:
             text=row["name"],
             textposition="top center",
             marker=dict(size=10, color="rgba(128, 0, 0, 1)"),
-            name=row["name"]
+            name=row["name"] if show_legend else ""  # **根據選擇決定是否顯示標記點圖例**
         ))
-
-
+    
     # **設定雙 Y 軸（海拔 + 坡度）**
     fig.update_layout(
         title="🚴‍♂️ 爬升與坡度圖",
@@ -172,18 +176,19 @@ if uploaded_file:
         yaxis2=dict(title="坡度 (%)", overlaying="y", side="right"),
         hovermode="x",
         
-        # **設定圖例位置**
+        # **依據開關顯示圖例**
+        showlegend=show_legend,
         legend=dict(
-            x=0,  # 靠右
-            y=1,  # 靠下
+            x=0,  # 靠左
+            y=1,  # 靠上
             xanchor="left",
             yanchor="top"
-        )
+        ) if show_legend else None  # **如果關閉圖例，則設定為 None**
     )
-
+    
     # **顯示圖表**
-    fig.show()
     st.plotly_chart(fig)
+
 
     m = folium.Map(location=[route_df["lat"].mean(), route_df["lon"].mean()], zoom_start=12)
     folium.PolyLine(list(zip(route_df["lat"], route_df["lon"])), color="blue", weight=2.5, opacity=1).add_to(m)
