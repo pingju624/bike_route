@@ -8,8 +8,6 @@ from geopy.distance import geodesic
 from streamlit_folium import folium_static
 import numpy as np
 from scipy.ndimage import gaussian_filter1d
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 import streamlit as st
 import io
 import plotly.io as pio
@@ -242,20 +240,3 @@ if uploaded_file:
 
     folium_static(m)
 
-
-    # **啟動 Selenium 截圖**
-    options = Options()
-    options.add_argument("--headless")
-    driver = webdriver.Chrome(options=options)
-    
-    m.save("map.html")  # 先存成 HTML
-    driver.get("file://" + os.path.abspath("map.html"))
-    driver.set_window_size(1024, 768)
-    driver.save_screenshot("地圖軌跡.png")
-    driver.quit()
-    
-    # **提供下載按鈕**
-    st.download_button(label="📥 下載地圖軌跡",
-                       data=load_image_as_bytes("地圖軌跡.png"),
-                       file_name="地圖軌跡.png",
-                       mime="image/png")
