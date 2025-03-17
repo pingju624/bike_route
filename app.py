@@ -180,43 +180,7 @@ if uploaded_file:
             yanchor="top"
         )
     )
-    
-    # **設定 Plotly 的默認字體**
-    pio.templates["custom"] = pio.templates["plotly"]
-    pio.templates["custom"]["layout"]["font"] = {"family": "Microsoft JhengHei, SimHei, Noto Sans TC, Arial Unicode MS, sans-serif", "size": 14}
-    pio.templates.default = "custom"  # 套用此字體設定
-    
-    # **更新圖表字體**
-    fig.update_layout(
-        font=dict(family="Microsoft JhengHei, SimHei, Noto Sans TC, Arial Unicode MS, sans-serif", size=14),
-        plot_bgcolor="rgba(0,0,0,0)",  # 背景透明
-        paper_bgcolor="rgba(0,0,0,0)"
-    )
-    
-    # **顯示圖表**
-    fig.show()
-    st.plotly_chart(fig)
-    
-    # **生成坡度圖**
-    fig.write_image("坡度圖_不透明.png", format="png", scale=3)
-    fig.write_image("坡度圖_透明.png", format="png", scale=3)
-    
-    # **讀取圖片為二進制**
-    def load_image_as_bytes(file_path):
-        with open(file_path, "rb") as file:
-            return file.read()
-    
-    # **Streamlit 下載按鈕**
-    st.download_button(label="📥 下載坡度圖（不透明）",
-                       data=load_image_as_bytes("坡度圖_不透明.png"),
-                       file_name="坡度圖_不透明.png",
-                       mime="image/png")
-    
-    st.download_button(label="📥 下載坡度圖（透明背景）",
-                       data=load_image_as_bytes("坡度圖_透明.png"),
-                       file_name="坡度圖_透明.png",
-                       mime="image/png")
-    # **生成互動地圖**
+
     m = folium.Map(location=[route_df["lat"].mean(), route_df["lon"].mean()], zoom_start=12)
     folium.PolyLine(list(zip(route_df["lat"], route_df["lon"])), color="blue", weight=2.5, opacity=1).add_to(m)
 
