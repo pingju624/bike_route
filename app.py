@@ -70,6 +70,10 @@ if uploaded_file:
     route_df["elevation"] = route_df.apply(lambda row: elevation_data.get_elevation(row["lat"], row["lon"]), axis=1)
     placemark_df["elevation"] = placemark_df.apply(lambda row: elevation_data.get_elevation(row["lat"], row["lon"]), axis=1)
 
+    # **修正 NaN 高度數據**
+    route_df["elevation"].fillna(method="bfill", inplace=True)
+    route_df["elevation"].fillna(method="ffill", inplace=True)
+
     # **濾波海拔數據（使用高斯濾波）**
     route_df["filtered_elevation"] = gaussian_filter1d(route_df["elevation"], sigma=5)
 
@@ -90,6 +94,7 @@ if uploaded_file:
         lambda row: route_df.loc[((route_df["lat"] - row["lat"])**2 + (route_df["lon"] - row["lon"])**2).idxmin(), "cumulative_distance"], 
         axis=1
     )
+    placemark_df["cumulative_distance"].fillna(0, inplace=True)
 
     # **計算統計數據**
     total_distance = route_df["cumulative_distance"].max()
@@ -128,10 +133,21 @@ if uploaded_file:
         yaxis="y2"
     ))
 
+    # **標記點**
+    for _, row in placemark_df.iterrows():
+        fig.add_trace(go.Scatter(
+            x=[row["cumulative_distance"]],
+            y=[row["elevation"]],
+            mode="markers+text",
+            text=row["name"],
+            textposition="top center",
+            marker=dict(size=10, color="red"),
+            name=row["name"]
+        ))
+
     st.plotly_chart(fig)
 
     # **生成互動地圖**
-    st.subheader("🗺️ 互動式地圖")
     m = folium.Map(location=[route_df["lat"].mean(), route_df["lon"].mean()], zoom_start=12)
     folium.PolyLine(list(zip(route_df["lat"], route_df["lon"])), color="blue", weight=2.5, opacity=1).add_to(m)
 
