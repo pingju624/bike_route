@@ -6,3 +6,4 @@ xmltodict
 streamlit_folium
 scipy
 selenium
+kaleido
