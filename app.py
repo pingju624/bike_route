@@ -182,8 +182,9 @@ if uploaded_file:
     )
     
     # **設定 Plotly 的默認字體**
-    pio.kaleido.scope.default_formatting["font"] = "Microsoft JhengHei"  # Windows
-    # pio.kaleido.scope.default_formatting["font"] = "Noto Sans TC"  # Mac/Linux
+    pio.templates["custom"] = pio.templates["plotly"]
+    pio.templates["custom"]["layout"]["font"] = {"family": "Microsoft JhengHei, SimHei, Noto Sans TC, Arial Unicode MS, sans-serif", "size": 14}
+    pio.templates.default = "custom"  # 套用此字體設定
     
     # **更新圖表字體**
     fig.update_layout(
@@ -215,7 +216,6 @@ if uploaded_file:
                        data=load_image_as_bytes("坡度圖_透明.png"),
                        file_name="坡度圖_透明.png",
                        mime="image/png")
-
     # **生成互動地圖**
     m = folium.Map(location=[route_df["lat"].mean(), route_df["lon"].mean()], zoom_start=12)
     folium.PolyLine(list(zip(route_df["lat"], route_df["lon"])), color="blue", weight=2.5, opacity=1).add_to(m)
