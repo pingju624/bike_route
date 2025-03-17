@@ -5,3 +5,4 @@ geopy
 xmltodict
 streamlit_folium
 scipy
+selenium
