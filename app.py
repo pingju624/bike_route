@@ -109,7 +109,7 @@ if uploaded_file:
 
     # **顯示統計數據**
     fig.add_annotation(
-        x=0, y=1,
+        x=1, y=0,
         xref="paper", yref="paper",
         text=f"總距離: {total_distance:.2f} km<br>總爬升: {total_ascent:.0f} m<br>總下降: {total_descent:.0f} m<br>最大坡度: {max_grade:.1f} %<br>平均坡度: {avg_grade:.1f} %",
         showarrow=False,
@@ -163,8 +163,8 @@ if uploaded_file:
         
         # **設定圖例位置**
         legend=dict(
-            x=1,  # 靠右
-            y=0,  # 靠下
+            x=0,  # 靠右
+            y=1,  # 靠下
             xanchor="right",
             yanchor="bottom"
         )
