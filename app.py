@@ -57,6 +57,8 @@ def parse_kml(file):
 # **Streamlit UI**
 st.title("🚴‍♂️ 自行車路線分析工具")
 
+st.markdown(可以使用google我的地圖規劃好路徑後，下載kml檔匯出，在這邊上傳)
+
 # **KML 檔案上傳**
 uploaded_file = st.file_uploader("請上傳 KML 檔案", type=["kml"])
 if uploaded_file:
