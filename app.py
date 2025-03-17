@@ -9,6 +9,8 @@ from streamlit_folium import folium_static
 import numpy as np
 from scipy.ndimage import gaussian_filter1d
 
+filter_grade_parameter = 50
+
 # **函數：解析 KML 檔案**
 def parse_kml(file):
     namespace = {"kml": "http://www.opengis.net/kml/2.2"}
@@ -87,7 +89,7 @@ if uploaded_file:
     route_df["grade"].fillna(0, inplace=True)
 
     # **平滑坡度數據**
-    route_df["filtered_grade"] = gaussian_filter1d(route_df["grade"], sigma=20)
+    route_df["filtered_grade"] = gaussian_filter1d(route_df["grade"], sigma=filter_grade_parameter)
     route_df["smoothed_grade"] = route_df["grade"].rolling(window=100, center=True, min_periods=1).mean()
 
     # **修正標記點的位置**
