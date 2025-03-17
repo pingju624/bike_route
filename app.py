@@ -7,6 +7,7 @@ import plotly.graph_objects as go
 from geopy.distance import geodesic
 from streamlit_folium import folium_static
 import numpy as np
+from scipy.ndimage import gaussian_filter1d
 
 # **函數：解析 KML 檔案**
 def parse_kml(file):
@@ -56,63 +57,36 @@ if uploaded_file:
     # 解析 KML
     route_df, placemark_df = parse_kml(uploaded_file)
 
-    # **讓使用者修改標記點名稱**
-    st.subheader("🏷️ 修改標記點名稱")
-    new_names = []
-    for i in range(len(placemark_df)):
-        new_name = st.text_input(f"{placemark_df.loc[i, 'name']} 的新名稱", value=placemark_df.loc[i, "name"])
-        new_names.append(new_name)
-    placemark_df["name"] = new_names  # 更新標記點名稱
-
     # **補充海拔數據**
     elevation_data = srtm.get_data()
     route_df["elevation"] = route_df.apply(lambda row: elevation_data.get_elevation(row["lat"], row["lon"]), axis=1)
     placemark_df["elevation"] = placemark_df.apply(lambda row: elevation_data.get_elevation(row["lat"], row["lon"]), axis=1)
 
-    # **平滑海拔高度**
-    route_df["smoothed_elevation"] = route_df["elevation"].rolling(window=10, center=True, min_periods=1).mean()
+    # **濾波海拔數據**
+    route_df["filtered_elevation"] = gaussian_filter1d(route_df["elevation"], sigma=5)
 
     # **計算距離**
     route_df["distance_km"] = [0] + [geodesic((route_df.iloc[i-1]["lat"], route_df.iloc[i-1]["lon"]), 
                                               (route_df.iloc[i]["lat"], route_df.iloc[i]["lon"])).km for i in range(1, len(route_df))]
     route_df["cumulative_distance"] = route_df["distance_km"].cumsum()
 
-    # **計算坡度**
-    route_df["grade"] = route_df["elevation"].diff() / (route_df["distance_km"] * 1000) * 100
-    route_df["grade"].fillna(0, inplace=True)
-
-    # **平滑坡度數據**
-    route_df["smoothed_grade"] = route_df["grade"].rolling(window=50, center=True, min_periods=1).mean()
-
-    # **修正標記點的位置**
-    placemark_df["cumulative_distance"] = placemark_df.apply(
-        lambda row: route_df.loc[((route_df["lat"] - row["lat"])**2 + (route_df["lon"] - row["lon"])**2).idxmin(), "cumulative_distance"], 
-        axis=1
-    )
+    # **重新計算坡度**
+    route_df["filtered_grade"] = route_df["filtered_elevation"].diff() / (route_df["distance_km"] * 1000) * 100
+    route_df["filtered_grade"] = route_df["filtered_grade"].rolling(window=50, center=True, min_periods=1).mean()
 
     # **計算統計數據**
     total_distance = route_df["cumulative_distance"].max()
-    total_ascent = route_df["elevation"].diff().clip(lower=0).sum()
-    total_descent = -route_df["elevation"].diff().clip(upper=0).sum()
-    max_grade = route_df["smoothed_grade"].max()
-    avg_grade = route_df["smoothed_grade"].mean()
+    total_ascent = route_df["filtered_elevation"].diff().clip(lower=0).sum()
+    total_descent = -route_df["filtered_elevation"].diff().clip(upper=0).sum()
+    max_grade = route_df["filtered_grade"].max()
+    avg_grade = route_df["filtered_grade"].mean()
 
     # **繪製爬升與坡度圖**
     fig = go.Figure()
 
-    # **顯示統計數據**
-    fig.add_annotation(
-        x=0, y=1.05,
-        xref="paper", yref="paper",
-        text=f"總距離: {total_distance:.2f} km<br>總爬升: {total_ascent:.0f} m<br>總下降: {total_descent:.0f} m<br>最大坡度: {max_grade:.1f} %<br>平均坡度: {avg_grade:.1f} %",
-        showarrow=False,
-        align="left",
-        font=dict(size=14)
-    )
-
     fig.add_trace(go.Scatter(
         x=route_df["cumulative_distance"],
-        y=route_df["smoothed_elevation"],  # 使用平滑的海拔高度
+        y=route_df["filtered_elevation"],  
         mode="lines",
         name="海拔高度 (m)",
         line=dict(color="blue")
@@ -120,34 +94,17 @@ if uploaded_file:
 
     fig.add_trace(go.Scatter(
         x=route_df["cumulative_distance"],
-        y=route_df["smoothed_grade"],
+        y=route_df["filtered_grade"],
         mode="lines",
         name="坡度 (%)",
         line=dict(color="red", dash="dot"),
         yaxis="y2"
     ))
 
-    fig.update_layout(
-        title="🚴‍♂️ 爬升與坡度圖",
-        xaxis_title="累積距離 (km)",
-        yaxis=dict(title="海拔 (m)"),
-        yaxis2=dict(title="坡度 (%)", overlaying="y", side="right"),
-        hovermode="x"
-    )
-
     st.plotly_chart(fig)
 
     # **生成互動地圖**
-    st.subheader("🗺️ 互動式地圖")
     m = folium.Map(location=[route_df["lat"].mean(), route_df["lon"].mean()], zoom_start=12)
     folium.PolyLine(list(zip(route_df["lat"], route_df["lon"])), color="blue", weight=2.5, opacity=1).add_to(m)
-
-    # **標記停靠點**
-    for _, row in placemark_df.iterrows():
-        folium.Marker(
-            location=[row["lat"], row["lon"]],
-            popup=f"{row['name']} - {row['cumulative_distance']:.2f} km\n海拔: {row['elevation']} m",
-            icon=folium.Icon(color="blue", icon="info-sign")
-        ).add_to(m)
 
     folium_static(m)
