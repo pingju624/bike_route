@@ -155,7 +155,7 @@ if uploaded_file:
             mode="markers+text",
             text=row["name"],
             textposition="top center",
-            marker=dict(size=10, color=rgba(165, 42, 42, 1)),
+            marker=dict(size=10, color="rgba(165, 42, 42, 1)"),
             name=row["name"]
         ))
 
