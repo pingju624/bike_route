@@ -70,10 +70,6 @@ if uploaded_file:
     route_df["elevation"] = route_df.apply(lambda row: elevation_data.get_elevation(row["lat"], row["lon"]), axis=1)
     placemark_df["elevation"] = placemark_df.apply(lambda row: elevation_data.get_elevation(row["lat"], row["lon"]), axis=1)
 
-    # **修正 NaN 高度數據**
-    route_df["elevation"].fillna(method="bfill", inplace=True)
-    route_df["elevation"].fillna(method="ffill", inplace=True)
-
     # **濾波海拔數據（使用高斯濾波）**
     route_df["filtered_elevation"] = gaussian_filter1d(route_df["elevation"], sigma=5)
 
@@ -122,7 +118,7 @@ if uploaded_file:
 
     fig.add_trace(go.Scatter(
         x=route_df["cumulative_distance"],
-        y=route_df["smoothed_elevation"],  # 使用平滑的海拔高度
+        y=route_df["filtered_elevation"],  # 使用平滑的海拔高度
         mode="lines",
         name="海拔高度 (m)",
         line=dict(color="blue")
@@ -130,7 +126,7 @@ if uploaded_file:
 
     fig.add_trace(go.Scatter(
         x=route_df["cumulative_distance"],
-        y=route_df["smoothed_grade"],
+        y=route_df["grade"],
         mode="lines",
         name="坡度 (%)",
         line=dict(color="red", dash="dot"),
