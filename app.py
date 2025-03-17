@@ -9,7 +9,7 @@ from streamlit_folium import folium_static
 import numpy as np
 from scipy.ndimage import gaussian_filter1d
 
-filter_grade_parameter = 10
+filter_grade_parameter = 20
 
 # **函數：解析 KML 檔案**
 def parse_kml(file):
@@ -72,7 +72,8 @@ if uploaded_file:
     route_df["elevation"] = route_df.apply(lambda row: elevation_data.get_elevation(row["lat"], row["lon"]), axis=1)
     placemark_df["elevation"] = placemark_df.apply(lambda row: elevation_data.get_elevation(row["lat"], row["lon"]), axis=1)
 
-    # **濾波海拔數據（使用高斯濾波）**
+    # **平滑海拔高度（使用高斯濾波）**
+    route_df["smoothed_elevation"] = route_df["elevation"].rolling(window=30, center=True, min_periods=1).mean()
     route_df["filtered_elevation"] = gaussian_filter1d(route_df["elevation"], sigma=5)
 
     # **計算距離**
@@ -80,16 +81,12 @@ if uploaded_file:
                                               (route_df.iloc[i]["lat"], route_df.iloc[i]["lon"])).km for i in range(1, len(route_df))]
     route_df["cumulative_distance"] = route_df["distance_km"].cumsum()
 
-
-    # **平滑海拔高度**
-    route_df["smoothed_elevation"] = route_df["elevation"].rolling(window=30, center=True, min_periods=1).mean()
-
     # **計算坡度**
     route_df["grade"] = route_df["filtered_elevation"].diff() / (route_df["distance_km"] * 1000) * 100
     route_df["grade"].fillna(0, inplace=True)
 
     # **平滑坡度數據**
-    route_df["smoothed_grade"] = route_df["grade"].rolling(window=10, center=True, min_periods=1).mean()
+    route_df["smoothed_grade"] = route_df["grade"].rolling(window=filter_grade_parameter, center=True, min_periods=1).mean()
     route_df["filtered_grade"] = gaussian_filter1d(route_df["smoothed_grade"], sigma=filter_grade_parameter)
    
     # **修正標記點的位置**
