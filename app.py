@@ -191,7 +191,7 @@ if uploaded_file:
     for _, row in placemark_df.iterrows():
         popup_text = f"""
         <div style="width: 200px;">
-            <b>{row['name']}</b><br>
+            <b>{row['name']}</b>
             - {row['cumulative_distance']:.2f} km<br>
             海拔: {row['elevation']} m
         </div>
