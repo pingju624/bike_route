@@ -127,9 +127,9 @@ if uploaded_file:
         y=route_df["filtered_elevation"],  
         mode="lines",
         name="海拔高度",
-        line=dict(color="green"),  # **設定線條為綠色**
+        line=dict(color='rgba(68, 106, 55, 1)'),  # **設定線條為綠色**
         fill='tozeroy',  # **讓底部填充顏色**
-        fillcolor='rgba(0, 128, 0, 0.3)',  # **半透明綠色**
+        fillcolor='rgba(68, 106, 55, 0.3)',  # **半透明綠色**
         customdata=np.stack((route_df["cumulative_distance"], route_df["smoothed_grade"]), axis=-1),  
         hovertemplate="距離: %{customdata[0]:.2f} km<br>海拔: %{y:.2f} m<br>坡度: %{customdata[1]:.1f} %",
         yaxis="y"
