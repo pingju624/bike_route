@@ -126,12 +126,15 @@ if uploaded_file:
         x=route_df["cumulative_distance"],
         y=route_df["filtered_elevation"],  
         mode="lines",
-        name="海拔高度",  # **圖例名稱**
-        line=dict(color="blue"),
-        customdata=np.stack((route_df["cumulative_distance"], route_df["smoothed_grade"]), axis=-1),  # 里程數 & 坡度
+        name="海拔高度",
+        line=dict(color="green"),  # **設定線條為綠色**
+        fill='tozeroy',  # **讓底部填充顏色**
+        fillcolor='rgba(0, 128, 0, 0.3)',  # **半透明綠色**
+        customdata=np.stack((route_df["cumulative_distance"], route_df["smoothed_grade"]), axis=-1),  
         hovertemplate="距離: %{customdata[0]:.2f} km<br>海拔: %{y:.2f} m<br>坡度: %{customdata[1]:.1f} %",
         yaxis="y"
-    ))
+        ))
+
     
     # **坡度曲線（應該對應 y2 軸，並隱藏 Hover）**
     fig.add_trace(go.Scatter(
