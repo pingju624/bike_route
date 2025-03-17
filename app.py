@@ -157,7 +157,8 @@ if uploaded_file:
         yaxis2=dict(title="坡度 (%)", overlaying="y", side="right"),
         hovermode="x"
     )
-   st.plotly_chart(fig)
+   
+    st.plotly_chart(fig)
 
     # **生成互動地圖**
     m = folium.Map(location=[route_df["lat"].mean(), route_df["lon"].mean()], zoom_start=12)
