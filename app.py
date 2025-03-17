@@ -113,7 +113,7 @@ if uploaded_file:
         xref="paper", yref="paper",
         text=f"總距離: {total_distance:.2f} km<br>總爬升: {total_ascent:.0f} m<br>總下降: {total_descent:.0f} m<br>最大坡度: {max_grade:.1f} %<br>平均坡度: {avg_grade:.1f} %",
         showarrow=False,
-        align="left",
+        align="right",
         font=dict(size=14)
     )
 
@@ -165,8 +165,8 @@ if uploaded_file:
         legend=dict(
             x=0,  # 靠右
             y=1,  # 靠下
-            xanchor="right",
-            yanchor="bottom"
+            xanchor="left",
+            yanchor="top"
         )
     )
     
