@@ -181,6 +181,10 @@ if uploaded_file:
         )
     )
 
+    # **顯示圖表**
+    fig.show()
+    st.plotly_chart(fig)
+
     m = folium.Map(location=[route_df["lat"].mean(), route_df["lon"].mean()], zoom_start=12)
     folium.PolyLine(list(zip(route_df["lat"], route_df["lon"])), color="blue", weight=2.5, opacity=1).add_to(m)
 
