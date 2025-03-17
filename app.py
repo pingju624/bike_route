@@ -181,23 +181,23 @@ if uploaded_file:
         )
     )
     
+    # **設定 Plotly 的默認字體**
+    pio.kaleido.scope.default_formatting["font"] = "Microsoft JhengHei"  # Windows
+    # pio.kaleido.scope.default_formatting["font"] = "Noto Sans TC"  # Mac/Linux
+    
+    # **更新圖表字體**
     fig.update_layout(
-        font_family="Microsoft JhengHei, SimHei, Noto Sans TC, Arial Unicode MS, sans-serif",
-        font=dict(size=14),  # ✅ 設定字體大小
-        plot_bgcolor="rgba(0,0,0,0)",  # ✅ 背景透明
+        font=dict(family="Microsoft JhengHei, SimHei, Noto Sans TC, Arial Unicode MS, sans-serif", size=14),
+        plot_bgcolor="rgba(0,0,0,0)",  # 背景透明
         paper_bgcolor="rgba(0,0,0,0)"
     )
-
+    
     # **顯示圖表**
     fig.show()
-
-
     st.plotly_chart(fig)
-
-
-    # **生成坡度圖（示例）**
+    
+    # **生成坡度圖**
     fig.write_image("坡度圖_不透明.png", format="png", scale=3)
-    fig.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)")  # 設置背景透明
     fig.write_image("坡度圖_透明.png", format="png", scale=3)
     
     # **讀取圖片為二進制**
@@ -215,6 +215,22 @@ if uploaded_file:
                        data=load_image_as_bytes("坡度圖_透明.png"),
                        file_name="坡度圖_透明.png",
                        mime="image/png")
+        
+        # **讀取圖片為二進制**
+        def load_image_as_bytes(file_path):
+            with open(file_path, "rb") as file:
+                return file.read()
+        
+        # **Streamlit 下載按鈕**
+        st.download_button(label="📥 下載坡度圖（不透明）",
+                           data=load_image_as_bytes("坡度圖_不透明.png"),
+                           file_name="坡度圖_不透明.png",
+                           mime="image/png")
+        
+        st.download_button(label="📥 下載坡度圖（透明背景）",
+                           data=load_image_as_bytes("坡度圖_透明.png"),
+                           file_name="坡度圖_透明.png",
+                           mime="image/png")
 
 
     # **生成互動地圖**
