@@ -89,7 +89,7 @@ if uploaded_file:
     route_df["grade"].fillna(0, inplace=True)
 
     # **平滑坡度數據**
-     route_df["smoothed_grade"] = route_df["grade"].rolling(window=10, center=True, min_periods=1).mean()
+    route_df["smoothed_grade"] = route_df["grade"].rolling(window=10, center=True, min_periods=1).mean()
     route_df["filtered_grade"] = gaussian_filter1d(route_df["smoothed_grade"], sigma=filter_grade_parameter)
    
     # **修正標記點的位置**
