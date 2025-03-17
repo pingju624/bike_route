@@ -3,3 +3,4 @@ folium
 plotly
 geopy
 xmltodict
+streamlit_folium
