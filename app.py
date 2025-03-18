@@ -81,7 +81,7 @@ if uploaded_file:
 
     # **平滑海拔高度（使用高斯濾波）**
     route_df["smoothed_elevation"] = route_df["elevation"].rolling(window=30, center=True, min_periods=1).mean()
-    route_df["filtered_elevation"] = gaussian_filter1d(route_df["elevation"], sigma=5)
+    route_df["filtered_elevation"] = gaussian_filter1d(route_df["elevation"], sigma=20)
 
     # **計算距離**
     route_df["distance_km"] = [0] + [geodesic((route_df.iloc[i-1]["lat"], route_df.iloc[i-1]["lon"]), 
@@ -149,16 +149,16 @@ if uploaded_file:
         yaxis="y"
     ))
     
-    # **坡度曲線（灰色虛線）**
-    fig.add_trace(go.Scatter(
-        x=route_df["cumulative_distance"],
-        y=route_df["smoothed_grade"],
-        mode="lines",
-        name="坡度 (%)" if show_legend else "",
-        line=dict(color="gray", dash="dash"),
-        hoverinfo="none",
-        yaxis="y2"
-    ))
+    # # **坡度曲線（灰色虛線）**
+    # fig.add_trace(go.Scatter(
+    #     x=route_df["cumulative_distance"],
+    #     y=route_df["smoothed_grade"],
+    #     mode="lines",
+    #     name="坡度 (%)" if show_legend else "",
+    #     line=dict(color="gray", dash="dash"),
+    #     hoverinfo="none",
+    #     yaxis="y2"
+    # ))
     
     # **標記點**
     for _, row in placemark_df.iterrows():
@@ -174,10 +174,10 @@ if uploaded_file:
     
     # **設定雙 Y 軸（海拔 + 坡度）**
     fig.update_layout(
-        title=f" {file_name} - 爬升與坡度圖",
+        title=f" {file_name} - 高度圖",
         xaxis_title="累積距離 (km)",
         yaxis=dict(title="海拔 (m)", side="left"),
-        yaxis2=dict(title="坡度 (%)", overlaying="y", side="right"),
+        # yaxis2=dict(title="坡度 (%)", overlaying="y", side="right"),
         hovermode="x",
         
         # **依據開關顯示圖例**
