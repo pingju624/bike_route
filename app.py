@@ -122,14 +122,14 @@ if uploaded_file:
     # **條件顯示統計數據**
     if show_annotation:
         fig.add_annotation(
-            x=1, y=0,
+            x=0, y=1,
             xref="paper", yref="paper",
             text=f"總距離: {total_distance:.2f} km<br>總爬升: {total_ascent:.0f} m<br>總下降: {total_descent:.0f} m<br>最大坡度: {max_grade:.1f} %<br>平均坡度: {avg_grade:.1f} %",
             showarrow=False,
             align="right",
             font=dict(size=14),
-            xanchor="right",
-            yanchor="bottom",
+            xanchor="left",
+            yanchor="top",
             xshift=0,
             yshift=20
         )
@@ -182,7 +182,7 @@ if uploaded_file:
         # **依據開關顯示圖例**
         showlegend=show_legend,
         legend=dict(
-            x=0,  # 靠左
+            x=1,  # 靠左
             y=1,  # 靠上
             xanchor="left",
             yanchor="top"
