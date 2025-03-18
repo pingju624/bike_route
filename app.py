@@ -93,7 +93,7 @@ if uploaded_file:
     route_df["grade"].fillna(0, inplace=True)
 
     # **平滑坡度數據**
-    route_df["filtered_grade"] = gaussian_filter1d(route_df["grade"], sigma=10)
+    route_df["filtered_grade"] = gaussian_filter1d(route_df["grade"], sigma=30)
     route_df["smoothed_grade"] = route_df["filtered_grade"].rolling(window=100, center=True, min_periods=1).mean()
 
    
@@ -108,7 +108,7 @@ if uploaded_file:
     total_distance = route_df["cumulative_distance"].max()
     total_ascent = route_df["filtered_elevation"].diff().clip(lower=0).sum()
     total_descent = -route_df["filtered_elevation"].diff().clip(upper=0).sum()
-    max_grade = route_df["smoothed_grade"].quantile(0.95)
+    max_grade = route_df["smoothed_grade"].quantile(0.98)
     avg_grade = route_df["smoothed_grade"].mean()
 
     
