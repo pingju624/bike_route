@@ -215,7 +215,7 @@ if uploaded_file:
         folium.Marker(
             location=[row["lat"], row["lon"]],
             icon=folium.DivIcon(html=f"""
-                <div style="font-size: 8px; font-weight: bold; color: black; text-align: center;style="width: 100px;">
+                <div style="font-size: 8px; font-weight: bold; color: black; text-align: center; width: 100px;">
                     {row['name']}
                 </div>
             """),
