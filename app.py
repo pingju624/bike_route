@@ -80,8 +80,8 @@ if uploaded_file:
     placemark_df["elevation"] = placemark_df.apply(lambda row: elevation_data.get_elevation(row["lat"], row["lon"]), axis=1)
 
     # **平滑海拔高度（使用高斯濾波）**
-    route_df["smoothed_elevation"] = route_df["elevation"].rolling(window=30, center=True, min_periods=1).mean()
-    route_df["filtered_elevation"] = gaussian_filter1d(route_df["elevation"], sigma=20)
+    route_df["filtered_elevation"] = route_df["elevation"].rolling(window=100, center=True, min_periods=1).mean()
+    # route_df["filtered_elevation"] = gaussian_filter1d(route_df["elevation"], sigma=5)
 
     # **計算距離**
     route_df["distance_km"] = [0] + [geodesic((route_df.iloc[i-1]["lat"], route_df.iloc[i-1]["lon"]), 
