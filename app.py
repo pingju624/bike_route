@@ -108,7 +108,7 @@ if uploaded_file:
     total_distance = route_df["cumulative_distance"].max()
     total_ascent = route_df["filtered_elevation"].diff().clip(lower=0).sum()
     total_descent = -route_df["filtered_elevation"].diff().clip(upper=0).sum()
-    max_grade = route_df["smoothed_grade"].nlargest(50).mean()
+    max_grade = route_df["smoothed_grade"].quantile(0.95)
     avg_grade = route_df["smoothed_grade"].mean()
 
     
