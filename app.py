@@ -55,7 +55,7 @@ def parse_kml(file):
     return route_df, placemark_df
 
 # **Streamlit UI**
-st.title("坡度圖、路線分析工具")
+st.title("單車坡度路線分析小工具")
 
 st.markdown("Tips: 可以使用google我的地圖規劃好路徑後，下載kml檔匯出，在這邊上傳")
 
